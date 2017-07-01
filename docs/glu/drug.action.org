@@ -1,0 +1,113 @@
+#+TITLE: 血糖药物调整建议接口
+
+* 接口说明
+  根据用户输入的血糖值和降糖药物使用情况给出药物调整建议
+
+** 接口细节
+   + URI :: http://localtion:port/glu/drug.action
+   + METHOD :: POST
+   + 请求数据 :: 请求数据为JSON结构体，类型为"application/json"
+             #+BEGIN_SRC JSON
+                     {
+                     "drugs" : [
+                     { "name" : "药物名称A", "time" : 0 /*药物使用时间*/, "type" : 0 /*药物类型*/, "value": 1 /*服药量*/ },
+                     { "name" : "药物名称B", "time" : 1 /*药物使用时间*/, "type" : 1 /*药物类型*/, "value": 2 /*服药量*/ }
+                     ],
+                     "values" : [
+                     { "time" : 0 /*血糖测量时间*/, "value" : 1.0 /*血糖值*/},
+                     { "time" : 2 /*血糖测量时间*/, "value" : 2.0 /*血糖值*/}
+                     ]
+                     }
+             #+END_SRC
+   + 返回数据 :: 返回对应的最优的调整建议，在短效和速效药情况下是多条，其余情况就是一条
+             #+BEGIN_SRC JSON
+             {
+             "status" : 0,
+             "info" : "Success", 
+             "data" : [
+             {"name":"药物名称A", "time":0, "type": 0, "value": 1.0, "adjust_type": 1 /*药物增加&减少&停止类型*/, "adjust_value": 2},
+             {"name":"药物名称B", "time":0, "type": 0, "value": 1.0, "adjust_type": 2 /*药物增加&减少&停止类型*/, "adjust_value": 0},
+             ]
+             }
+             #+END_SRC
+
+** 其他说明
+   #+BEGIN_SRC java
+     public final static int T_LONG = 0;    // 长效
+     public final static int T_MIDDLE = 1;  // 中效
+     public final static int T_REGULAR = 2; // 短效
+     public final static int T_RAPID = 3;   // 速效
+
+     public final static int I_FBG = 0;              // 空腹
+     public final static int I_2hBG_breakfast = 1;   // 早餐后
+     public final static int I_BG_before_lunch = 2;  // 午餐前
+     public final static int I_2hBG_lunch = 3;       // 午餐后
+     public final static int I_BG_before_dinner = 4; // 晚餐前
+     public final static int I_2hBG_dinner = 5;      // 晚餐后
+     public final static int I_BG_before_sleep = 6;  // 睡前
+     public final static int I_BG_3am = 7;           // 夜间
+
+     public final static int T_FIXED = 0;     // 药物不变
+     public final static int T_INCREMENT = 1; // 增加药物量
+     public final static int T_DECREMENT = 2; // 减少药物量
+     public final static int T_STOP = 3;      // 停止用药
+   #+END_SRC
+
+* 例子说明
+
+  输入：
+  #+BEGIN_SRC 
+  {
+  "drugs": [
+  {
+  "name": "长效A",
+  "time": 0,
+  "type": 0,
+  "value": 10
+  },
+  {
+  "name": "短效B",
+  "time": 2,
+  "type": 2,
+  "value": 2
+  }
+  ],
+  "values": [
+  {
+  "time": 0,
+  "value": 7.8
+  },
+  {
+  "time": 2,
+  "value": 5.8
+  }
+  ]
+  }
+ 
+  #+END_SRC
+
+  输出
+  #+BEGIN_SRC 
+  {
+    "data": [
+        {
+            "adjust_type": 0,
+            "adjust_value": 0,
+            "name": "长效A",
+            "time": 0,
+            "type": 0,
+            "value": 10
+        },
+        {
+            "adjust_type": 1,
+            "adjust_value": 2,
+            "name": "短效B",
+            "time": 2,
+            "type": 2,
+            "value": 2
+        }
+    ],
+    "info": "Success",
+    "status": 0
+  }
+  #+END_SRC
