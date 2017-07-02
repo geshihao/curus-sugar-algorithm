@@ -6,9 +6,9 @@ package org.buaa.curus.io.drug;
 public class DrugAdjust extends Drug {
 
     private int adjust_type;
-    private int adjust_value;
+    private long adjust_value;
 
-    public DrugAdjust(Drug drug, int adjust_type, int adjust_value)
+    public DrugAdjust(Drug drug, int adjust_type, long adjust_value)
     {
         super(drug);
         this.adjust_type = adjust_type;
@@ -23,11 +23,11 @@ public class DrugAdjust extends Drug {
         this.adjust_type = adjust_type;
     }
 
-    public int getAdjust_value() {
+    public long getAdjust_value() {
         return adjust_value;
     }
 
-    public void setAdjust_value(int adjust_value) {
+    public void setAdjust_value(long adjust_value) {
         this.adjust_value = adjust_value;
     }
 

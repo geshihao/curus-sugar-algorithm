@@ -60,9 +60,10 @@ public class GluAlgorithm {
     }
 
     static public List<DrugAdjust> GetDrugAdjusts(double[] levels, List<Drug> drugs){
+
         double min_level = GetMinGluLevel(levels,drugs);
 
-        int[] abs_drug_adjust = GetAbsoluteDrugAdjusts(levels,min_level,drugs);
+        long[] abs_drug_adjust = GetAbsoluteDrugAdjusts(levels,min_level,drugs);
 
         return GetAdjustSuggestions(abs_drug_adjust,drugs);
     }
@@ -83,7 +84,7 @@ public class GluAlgorithm {
         for ( Drug drug : drugs ) {
             if (drug.getType() == DrugCons.T_LONG)
                 continue;
-            else if ( drug.getType() == DrugCons.T_REGULAR ) {
+            else if ( drug.getType() == DrugCons.T_REGULAR && drug.getValue() != 0 ) {
                 switch( drug.getTime() )
                 {
                     case DrugCons.I_before_breakfase:
@@ -104,9 +105,9 @@ public class GluAlgorithm {
         return min_level;
     }
 
-    static public int[] GetAbsoluteDrugAdjusts(double[] levels, double min_level, List<Drug> drugs)
+    static public long[] GetAbsoluteDrugAdjusts(double[] levels, double min_level, List<Drug> drugs)
     {
-        int[] adjust_values = new int[drugs.size()];
+        long[] adjust_values = new long[drugs.size()];
 
         for ( int i = 0; i < drugs.size(); ++ i )
         {
@@ -116,22 +117,22 @@ public class GluAlgorithm {
             {
                 case DrugCons.T_LONG:
                     if ( min_level <= 0.0 ) {
-                        adjust_values[i] = new Double(min_level*2).intValue();
+                        adjust_values[i] = Math.round(min_level*2);
                     } else {
-                        adjust_values[i] = new Double(min_level*2-1).intValue();
+                        adjust_values[i] = Math.round(min_level*2-1);
                     }
                     break;
                 case DrugCons.T_REGULAR:
                     switch( drug.getTime() )
                     {
                         case DrugCons.I_before_breakfase:
-                            adjust_values[i] = new Double( 2 * (levels[DrugCons.I_before_lunch] - min_level)).intValue();
+                            adjust_values[i] = Math.round( 2 * (levels[DrugCons.I_before_lunch] - min_level));
                             break;
                         case DrugCons.I_before_lunch:
-                            adjust_values[i] = new Double( 2 * (levels[DrugCons.I_before_dinner] - min_level)).intValue();
+                            adjust_values[i] = Math.round( 2 * (levels[DrugCons.I_before_dinner] - min_level));
                             break;
                         case DrugCons.I_before_dinner:
-                            adjust_values[i] = new Double( 2 * (levels[DrugCons.I_before_sleep] - min_level)).intValue();
+                            adjust_values[i] = Math.round( 2 * (levels[DrugCons.I_before_sleep] - min_level));
                             break;
                         default:
                             logger.warn(String.format("error drug time:[%s]", drug));
@@ -145,7 +146,7 @@ public class GluAlgorithm {
         return adjust_values;
     }
 
-    static public List<DrugAdjust> GetAdjustSuggestions(int[] abs_adjust_values, List<Drug> drugs)
+    static public List<DrugAdjust> GetAdjustSuggestions(long[] abs_adjust_values, List<Drug> drugs)
     {
         List<DrugAdjust> drugAdjusts = new ArrayList<DrugAdjust>();
 
@@ -159,7 +160,7 @@ public class GluAlgorithm {
             } else if ( drug.getValue() + abs_adjust_values[i] <= 1 )
                 drugAdjusts.add(new DrugAdjust(drug,DrugCons.T_STOP,0));
             else if ( abs_adjust_values[i] > 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_INCREMENT,abs_adjust_values[i]));
-            else if ( abs_adjust_values[0] == 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_FIXED, 0));
+            else if ( abs_adjust_values[i] == 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_FIXED, 0));
             else drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_DECREMENT, -1*abs_adjust_values[i]));
         }
 
