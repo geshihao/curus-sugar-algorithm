@@ -136,6 +136,7 @@ public class GluAlgorithm {
                         default:
                             logger.warn(String.format("error drug time:[%s]", drug));
                     }
+                    break;
                 default:
                     logger.warn(String.format("error drug type:[%s]",drug));
             }

@@ -17,7 +17,7 @@ public class Drug {
     {
         this.name = drug.name;
         this.time = drug.time;
-        this.type = drug.time;
+        this.type = drug.type;
         this.value = drug.value;
     }
 
