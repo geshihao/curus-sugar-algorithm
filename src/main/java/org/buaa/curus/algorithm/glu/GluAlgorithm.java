@@ -63,9 +63,9 @@ public class GluAlgorithm {
 
         double min_level = GetMinGluLevel(levels,drugs);
 
-        long[] abs_drug_adjust = GetAbsoluteDrugAdjusts(levels,min_level,drugs);
+        long[] drug_adjust = GetDrugAdjusts(levels,min_level,drugs);
 
-        return GetAdjustSuggestions(abs_drug_adjust,drugs);
+        return GetAdjustSuggestions(drug_adjust,drugs);
     }
 
     static public double GetMinGluLevel(double[] levels, List<Drug> drugs) {
@@ -105,7 +105,7 @@ public class GluAlgorithm {
         return min_level;
     }
 
-    static public long[] GetAbsoluteDrugAdjusts(double[] levels, double min_level, List<Drug> drugs)
+    static public long[] GetDrugAdjusts(double[] levels, double min_level, List<Drug> drugs)
     {
         long[] adjust_values = new long[drugs.size()];
 
@@ -146,22 +146,25 @@ public class GluAlgorithm {
         return adjust_values;
     }
 
-    static public List<DrugAdjust> GetAdjustSuggestions(long[] abs_adjust_values, List<Drug> drugs)
+    static public List<DrugAdjust> GetAdjustSuggestions(long[] adjust_values, List<Drug> drugs)
     {
         List<DrugAdjust> drugAdjusts = new ArrayList<DrugAdjust>();
 
-        for ( int i = 0; i < abs_adjust_values.length; ++ i )
+        for ( int i = 0; i < adjust_values.length; ++ i )
         {
             Drug drug = drugs.get(i);
-            if ( drug.getValue() == 0 )
-            {
-                if ( abs_adjust_values[i] >= 3 ) drugAdjusts.add(new DrugAdjust(drug,DrugCons.T_INCREMENT, abs_adjust_values[i]));
-                else  drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_FIXED, /*abs_adjust_value*/ 0));
-            } else if ( drug.getValue() + abs_adjust_values[i] <= 1 )
-                drugAdjusts.add(new DrugAdjust(drug,DrugCons.T_STOP,0));
-            else if ( abs_adjust_values[i] > 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_INCREMENT,abs_adjust_values[i]));
-            else if ( abs_adjust_values[i] == 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_FIXED, 0));
-            else drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_DECREMENT, -1*abs_adjust_values[i]));
+            long final_value = drug.getValue() + adjust_values[i];
+
+            if ( final_value < 0 ) {
+                drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_STOP, /*abs_adjust_value*/ adjust_values[i], final_value,"建议不服用胰岛素"));
+            } else if ( drug.getValue() == 0 ) {
+                if ( adjust_values[i] >= 3 ) drugAdjusts.add(new DrugAdjust(drug,DrugCons.T_INCREMENT, adjust_values[i], final_value,"安全起见，建议咨询医生后再增加用量"));
+                else if ( adjust_values[i] > 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_FIXED, /*abs_adjust_value*/ adjust_values[i], final_value,"建议增加胰岛素，但用量较小，不方便用药，暂不改变"));
+            } else if ( final_value <= 1 ) drugAdjusts.add(new DrugAdjust(drug,DrugCons.T_STOP,adjust_values[i], final_value, "安全起见，建议先停用该时点胰岛素，并监测血糖变化"));
+            else if ( adjust_values[i] > 3 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_INCREMENT,adjust_values[i],final_value,"安全起见，建议咨询医生后再增加用量"));
+            else if ( adjust_values[i] > 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_INCREMENT,adjust_values[i],final_value,null));
+            else if ( adjust_values[i] == 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_FIXED, 0, final_value,null));
+            else drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_DECREMENT, adjust_values[i], final_value,null));
         }
 
         return drugAdjusts;
