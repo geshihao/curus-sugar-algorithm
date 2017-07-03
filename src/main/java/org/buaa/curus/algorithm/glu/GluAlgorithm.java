@@ -22,7 +22,9 @@ public class GluAlgorithm {
     static public double[] GetGluLevels(List<GluValue> values)
     {
         double[] bg_values = new double[DrugCons.I_3am+1];
-        bg_values[0] = Double.NaN;
+
+        for ( int i = 0; i < bg_values.length; ++ i)
+            bg_values[i] = Double.NaN;
 
         for ( GluValue value : values ) {
             int time = value.getTime();

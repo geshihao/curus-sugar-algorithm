@@ -16,7 +16,8 @@ public class GluLevelImpl {
         // IF(AND(D3≥7,D3<8.3),1,
         // IF(AND(D3≥8.3,D3<200÷18),1.5,
         // ROUNDDOWN(D3×18÷50,0)÷2))))))))
-        if ( value <= 0.0 ) return fbg_level;
+        if ( Double.isNaN(value) ) return fbg_level;
+
         if ( value <  2.8 ) return -2.0;
         if ( value <  3.9 ) return -1.0;
         if ( value <  4.4 ) return -0.5;
@@ -35,7 +36,7 @@ public class GluLevelImpl {
         // IF(AND(C3≥7.8,C3<10),0.5,
         // IF(AND(C3≥10,C3<200÷18),0.8,
         // ROUNDDOWN(C3×18÷50,0)÷2−1)))))
-        if ( value <= 0.0 ) {
+        if ( Double.isNaN(value) ) {
             if (fbg_level >= 0.0) return fbg_level;
             else return 0.0;
         }
@@ -57,7 +58,6 @@ public class GluLevelImpl {
         // IF(AND(B3≥7,B3<8.3),1,
         // IF(AND(B3≥8.3,B3<200÷18),1.5,
         // ROUNDDOWN(B3×18÷50,0)÷2))))))))
-        if ( value <= 0.0 ) return 0.0;
         if ( value <  2.8 ) return -2.0;
         if ( value <  3.9 ) return -1.0;
         if ( value <  4.4 ) return -0.5;
