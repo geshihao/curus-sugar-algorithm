@@ -160,8 +160,9 @@ public class GluAlgorithm {
             } else if ( drug.getValue() == 0 ) {
                 if ( adjust_values[i] >= 3 ) drugAdjusts.add(new DrugAdjust(drug,DrugCons.T_INCREMENT, adjust_values[i], final_value,"安全起见，建议咨询医生后再增加用量"));
                 else if ( adjust_values[i] > 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_FIXED, /*abs_adjust_value*/ adjust_values[i], final_value,"建议增加胰岛素，但用量较小，不方便用药，暂不改变"));
+                else drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_FIXED, /*abs_adjust_value*/ adjust_values[i], final_value,null));
             } else if ( final_value <= 1 ) drugAdjusts.add(new DrugAdjust(drug,DrugCons.T_STOP,adjust_values[i], final_value, "安全起见，建议先停用该时点胰岛素，并监测血糖变化"));
-            else if ( adjust_values[i] > 3 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_INCREMENT,adjust_values[i],final_value,"安全起见，建议咨询医生后再增加用量"));
+            else if ( adjust_values[i] >= 3 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_INCREMENT,adjust_values[i],final_value,"安全起见，建议咨询医生后再增加用量"));
             else if ( adjust_values[i] > 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_INCREMENT,adjust_values[i],final_value,null));
             else if ( adjust_values[i] == 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_FIXED, 0, final_value,null));
             else drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_DECREMENT, adjust_values[i], final_value,null));
