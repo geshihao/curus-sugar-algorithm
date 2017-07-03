@@ -165,7 +165,7 @@ public class GluAlgorithm {
             else if ( adjust_values[i] >= 3 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_INCREMENT,adjust_values[i],final_value,"安全起见，建议咨询医生后再增加用量"));
             else if ( adjust_values[i] > 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_INCREMENT,adjust_values[i],final_value,null));
             else if ( adjust_values[i] == 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_FIXED, 0, final_value,null));
-            else drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_DECREMENT, adjust_values[i], final_value,null));
+            else drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_DECREMENT, Math.abs(adjust_values[i]), final_value,null));
         }
 
         return drugAdjusts;
