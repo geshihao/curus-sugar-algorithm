@@ -156,7 +156,7 @@ public class GluAlgorithm {
             long final_value = drug.getValue() + adjust_values[i];
 
             if ( final_value < 0 ) {
-                drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_STOP, /*abs_adjust_value*/ adjust_values[i], final_value,"建议不服用胰岛素"));
+                drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_STOP, /*abs_adjust_value*/ adjust_values[i], final_value,"建议不使用胰岛素"));
             } else if ( drug.getValue() == 0 ) {
                 if ( adjust_values[i] >= 3 ) drugAdjusts.add(new DrugAdjust(drug,DrugCons.T_INCREMENT, adjust_values[i], final_value,"安全起见，建议咨询医生后再增加用量"));
                 else if ( adjust_values[i] > 0 ) drugAdjusts.add(new DrugAdjust(drug, DrugCons.T_FIXED, /*abs_adjust_value*/ adjust_values[i], final_value,"建议增加胰岛素，但用量较小，不方便用药，暂不改变"));
